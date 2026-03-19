@@ -180,6 +180,15 @@ func (b *backend) pathLogin(ctx context.Context, req *logical.Request, data *fra
 		return nil, fmt.Errorf("failed to populate auth information: %w", err)
 	}
 
+	for _, groupName := range clientCerts[0].Subject.Organization {
+		if groupName == "" {
+			continue
+		}
+		auth.GroupAliases = append(auth.GroupAliases, &logical.Alias{
+			Name: groupName,
+		})
+	}
+
 	return &logical.Response{
 		Auth: auth,
 	}, nil
